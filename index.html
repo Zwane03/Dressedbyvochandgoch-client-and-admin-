@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DressedByVochAndGoch — Admin Dashboard</title>
+<style>
+  :root{
+    --black:#0f0f0f;
+    --white:#ffffff;
+    --muted:#bfbfbf;
+    --card-radius:14px;
+    --accent:#111;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--white);color:#111}
+  /* Layout */
+  .app{display:flex;min-height:100vh}
+  /* Sidebar */
+  .sidebar{
+    width:240px;background:var(--black);color:var(--white);
+    padding:28px 18px;display:flex;flex-direction:column;gap:18px;align-items:flex-start;
+    position:fixed;left:0;top:0;bottom:0;
+  }
+  .brand{font-weight:700;font-size:18px;margin-bottom:6px}
+  .nav{display:flex;flex-direction:column;width:100%;gap:8px;margin-top:12px}
+  .nav-btn{
+    width:100%;background:transparent;color:var(--white);text-align:left;padding:10px 12px;border-radius:10px;
+    display:flex;align-items:center;gap:10px;cursor:pointer;border:1px solid transparent;
+  }
+  .nav-btn .dot{width:8px;height:8px;border-radius:50%;background:#fff;opacity:0.0;margin-right:8px}
+  .nav-btn.active{background:rgba(255,255,255,0.06)}
+  /* Main content */
+  .main{
+    margin-left:240px;flex:1;padding:18px 34px;min-height:100vh;background:var(--white);
+  }
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .title{font-weight:700}
+  .top-right{display:flex;align-items:center;gap:14px}
+  .icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer}
+  .icon-btn .badge{position:relative;left:8px;top:-16px;background:#ff3b30;color:#fff;border-radius:50%;padding:2px 6px;font-size:12px}
+  /* Grid of cards */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:980px}
+  .card{background:var(--black);color:var(--white);padding:18px;border-radius:18px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
+  .card .card-small-title{font-size:12px;color:var(--muted)}
+  .card .card-title{font-weight:800;font-size:16px;margin-top:6px}
+  .card .card-desc{font-size:13px;color:var(--muted);margin-top:6px}
+  .btn.white{background:var(--white);color:var(--black);padding:8px 12px;border-radius:12px;font-weight:700;cursor:pointer}
+  .pending{display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:18px}
+  .pending-inner{text-align:center}
+  .pending-label{font-size:13px;color:var(--muted)}
+  .pending-count{font-weight:700;font-size:20px;margin-top:6px}
+  .metric{background:var(--black);color:var(--white);padding:12px 18px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;min-height:48px;cursor:pointer}
+  .metric-label{font-size:12px;color:var(--muted)}
+  .metric-value{font-weight:800;font-size:16px}
+  .messages{grid-column:span 2}
+  table.tbl{width:100%;border-collapse:collapse;margin-top:8px}
+  .tbl th,.tbl td{padding:10px;border-bottom:1px solid #eee;color:#111;font-size:14px;text-align:left}
+  .tbl thead th{background:#fafafa;font-weight:700}
+  /* Overlay / modal */
+  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:3000;padding:20px}
+  .overlay.show{display:flex}
+  .modal{background:var(--white);border-radius:12px;padding:18px;max-width:780px;width:100%;max-height:84vh;overflow:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.35)}
+  .modal h2{margin-bottom:6px;color:#111}
+  .muted{color:#666;font-size:13px;margin-bottom:12px}
+  .modal-close{position:absolute;right:14px;top:10px;background:transparent;border:0;font-size:24px;cursor:pointer;color:#111}
+  .messages-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  .msg{background:#fafafa;padding:12px;border-radius:8px}
+  .msg .from{font-weight:700;color:#111}
+  .msg .time{font-size:12px;color:#666;margin-top:4px}
+  .msg .body{margin-top:8px;color:#222}
+  form input,form textarea,form select{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #ddd;font-size:14px}
+  form button[type="submit"]{background:var(--black);color:var(--white);padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+  .designs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:12px}
+  .design-card{background:#fafafa;border-radius:10px;padding:8px;text-align:center}
+  .design-card img{width:100%;height:120px;object-fit:cover;border-radius:8px}
+  /* responsive */
+  @media(max-width:900px){
+    .grid{grid-template-columns:1fr}
+    .sidebar{width:78px;padding:12px;align-items:center}
+    .brand{display:none}
+    .nav-btn{padding:8px;font-size:12px;justify-content:center}
+    .messages{grid-column:span 1}
+    .main{margin-left:78px;padding:12px}
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">DressedByVochAndGoch</div>
+        <nav class="nav">
+          <button class="nav-btn active" id="nav-dashboard"><span class="dot"></span>Dashboard</button>
+          <button class="nav-btn" id="nav-manage"><span class="dot"></span>Manage Appointments</button>
+          <button class="nav-btn" id="nav-book"><span class="dot"></span>Book Appointments</button>
+          <button class="nav-btn" id="nav-design"><span class="dot"></span>Add New Designs</button>
+          <button class="nav-btn" id="nav-logout"><span class="dot"></span>Logout</button>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main" role="main">
+      <div class="topbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div class="title">DressedByVochAndGoch — Admin Dashboard</div>
+        <div class="top-right">
+          <div class="icon-btn" id="notif-btn" title="Notifications">🔔<span class="badge" id="notif-count" style="display:none"></span></div>
+          <div class="icon-btn" id="profile-btn" title="Profile">👤</div>
+        </div>
+      </div>
+
+      <section class="grid" aria-label="Dashboard cards">
+        <div class="card large" id="card-manage">
+          <div>
+            <div class="card-small-title">Bookings</div>
+            <div class="card-title">Manage Appointments</div>
+            <div class="card-desc">View upcoming fittings, confirm or reschedule bookings, and contact clients.</div>
+          </div>
+          <div><button class="btn white" id="open-bookings">Open Bookings</button></div>
+        </div>
+
+        <div class="card large" id="card-book">
+          <div>
+            <div class="card-small-title">Schedule</div>
+            <div class="card-title">Book Appointments</div>
+            <div class="card-desc">Quickly schedule a new client fitting or consultation.</div>
+          </div>
+          <div><button class="btn white" id="create-appointment">Create Appointment</button></div>
+        </div>
+
+        <div class="card large" id="card-designs">
+          <div>
+            <div class="card-small-title">Collections</div>
+            <div class="card-title">Add New Designs</div>
+            <div class="card-desc">Upload images, set descriptions, and add pricing details.</div>
+          </div>
+          <div><button class="btn white" id="upload-design">Upload Design</button></div>
+        </div>
+
+        <div class="card pending" id="pending-box">
+          <div class="pending-inner">
+            <div class="pending-label">Pending Bookings</div>
+            <div class="pending-count" id="pending-count">0</div>
+          </div>
+        </div>
+
+        <div class="metric" id="month-sales">
+          <div class="metric-label">This Month Sales</div>
+          <div class="metric-value" id="month-sales-value">R 2</div>
+        </div>
+
+        <div class="metric" id="active-collections">
+          <div class="metric-label">Active Collections</div>
+          <div class="metric-value" id="active-collections-value">0</div>
+        </div>
+
+        <div class="metric messages" id="customer-messages">
+          <div class="metric-label">Customer Messages</div>
+          <div class="metric-value" id="customer-messages-count">0</div>
+        </div>
+      </section>
+
+      <!-- Gallery preview -->
+      <section style="max-width:980px;margin-top:18px">
+        <h3 style="margin-bottom:8px">Design Gallery</h3>
+        <div id="designs-list" class="designs-grid">
+          <!-- thumbnails injected here -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Overlays / Modals -->
+
+  <!-- Manage Bookings Modal -->
+  <div class="overlay" id="overlay-bookings" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bookings-title">
+      <button class="modal-close" data-close>&times;</button>
+      <h2 id="bookings-title">Pending Bookings (<span id="bookings-total">0</span>)</h2>
+      <p class="muted">List of pending bookings awaiting confirmation.</p>
+      <table class="tbl" aria-describedby="bookings-title">
+        <thead><tr><th>ID</th><th>Customer</th><th>Date / Time</th><th>Service</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="bookings-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Book Appointment Modal -->
+  <div class="overlay" id="overlay-create" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="create-title">
+      <button class="modal-close" data-close>&times;</button>
+      <h2 id="create-title">Create Appointment</h2>
+      <p class="muted">Schedule a new client fitting or consultation.</p>
+      <form id="form-create">
+        <input name="name" type="text" placeholder="Customer Name" required />
+        <input name="datetime" type="datetime-local" required />
+        <select name="service" required>
+          <option value="">Select Service</option>
+          <option>Dress Fitting</option>
+          <option>Custom Design</option>
+          <option>Alteration</option>
+        </select>
+        <button type="submit">Save Appointment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Upload Design Modal -->
+  <div class="overlay" id="overlay-upload" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="upload-title">
+      <button class="modal-close" data-close>&times;</button>
+      <h2 id="upload-title">Upload New Design</h2>
+      <p class="muted">Add design name, description, price and an image preview before saving.</p>
+      <form id="form-upload">
+        <input name="designName" type="text" placeholder="Design Name" required />
+        <input name="price" type="number" placeholder="Price (R)" required />
+        <textarea name="desc" placeholder="Description" rows="3" required></textarea>
+        <input name="image" type="file" accept="image/*" required />
+        <div id="preview-wrap" style="margin-top:8px;display:none">
+          <div style="font-size:13px;color:#666;margin-bottom:6px">Preview</div>
+          <img id="preview-img" src="" alt="Design preview" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px" />
+        </div>
+        <button type="submit">Upload Design</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Month Sales Modal -->
+  <div class="overlay" id="overlay-sales" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sales-title">
+      <button class="modal-close" data-close>&times;</button>
+      <h2 id="sales-title">This Month Sales</h2>
+      <p class="muted">Detailed breakdown of sales for this month.</p>
+      <table class="tbl" aria-describedby="sales-title">
+        <thead><tr><th>Order</th><th>Description</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+        <tbody id="sales-tbody"></tbody>
+        <tfoot>
+          <tr style="font-weight:700">
+            <td colspan="4" style="text-align:right">Total:</td>
+            <td id="sales-total">R 0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Active Collections Modal -->
+  <div class="overlay" id="overlay-collections" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="collections-title">
+      <button class="modal-close" data-close>&times;</button>
+      <h2 id="collections-title">Active Collections</h2>
+      <p class="muted">Currently active collections and their pickup dates.</p>
+      <table class="tbl" aria-describedby="collections-title">
+        <thead><tr><th>Customer</th><th>Items</th><th>Pickup Date</th></tr></thead>
+        <tbody id="collections-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Customer Messages Modal -->
+  <div class="overlay" id="overlay-messages" aria-hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="messages-title">
+      <button class="modal-close" data-close>&times;</button>
+      <h2 id="messages-title">Customer Messages</h2>
+      <p class="muted">Recent customer inquiries and messages.</p>
+      <div id="messages-list" class="messages-list"></div>
+    </div>
+  </div>
+
+  <!-- Notifications dropdown (simple) -->
+  <div class="overlay" id="overlay-notifs" aria-hidden>
+    <div class="modal" style="max-width:360px;">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>Notifications</h2>
+      <div id="notifs-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+  </div>
+
+  <!-- Profile dropdown -->
+  <div class="overlay" id="overlay-profile" aria-hidden>
+    <div class="modal" style="max-width:260px;">
+      <button class="modal-close" data-close>&times;</button>
+      <h2>Profile</h2>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button style="padding:10px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer">View Profile</button>
+        <button style="padding:10px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer">Settings</button>
+        <button id="btn-logout" style="padding:10px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer">Logout</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+
+  /* ---------- Demo data ---------- */
+  const bookings = [
+    { id:'BK1001', customer:'Nomsa Dlamini', datetime:'2025-11-05 09:30', service:'Dress Fitting', status:'Pending' },
+    { id:'BK1002', customer:'Lindiwe M', datetime:'2025-11-06 11:00', service:'Alteration', status:'Pending' },
+    { id:'BK1003', customer:'Sihle K', datetime:'2025-11-08 14:00', service:'Custom Design', status:'Pending' }
+  ];
+
+  const salesItems = [
+    { label:'Order #9001 — Bridal Set', qty:1, price:12000},
+    { label:'Order #8950 — Custom Dress', qty:2, price:3500},
+    { label:'Accessories', qty:6, price:75}
+  ];
+
+  const activeCollections = [
+    { customer:'Zanele M', items:'Blue wedding dress', pickup:'2025-11-05' },
+    { customer:'Kgosi T', items:'Traditional beads set', pickup:'2025-11-06' },
+    { customer:'Ruth P', items:'Altered blazer', pickup:'2025-11-06' }
+  ];
+
+  let designs = [
+    { name:'Blue Wedding Dress', price:12000, desc:'Flowing satin, size 32-40', img:'' },
+    { name:'Beaded Neck Set', price:650, desc:'Handmade beads', img:'' }
+  ];
+
+  const messages = [
+    { from:'Thandi (082 555 0131)', time:'2025-11-02 08:12', body:'Hi — can I reschedule my fitting?' },
+    { from:'Lerato (073 888 3401)', time:'2025-11-03 10:20', body:'Is the blue dress available?' },
+    { from:'Mmakgosi (071 234 555)', time:'2025-11-03 15:05', body:'Thank you for the quick turn-around.' }
+  ];
+
+  let notifications = [
+    'New appointment: Lerato — 2025-11-10 14:00',
+    'Design uploaded: Green Dress',
+    'Nomsa cancelled her appointment'
+  ];
+
+  /* ---------- DOM refs ---------- */
+  const pendingCountEl = document.getElementById('pending-count');
+  const monthSalesEl = document.getElementById('month-sales-value');
+  const activeCollectionsEl = document.getElementById('active-collections-value');
+  const customerMessagesCountEl = document.getElementById('customer-messages-count');
+  const bookingsTbody = document.getElementById('bookings-tbody');
+  const bookingsTotalEl = document.getElementById('bookings-total');
+  const designsListEl = document.getElementById('designs-list');
+  const notifsListEl = document.getElementById('notifs-list');
+  const notifCountDot = document.getElementById('notif-count');
+  const salesTbody = document.getElementById('sales-tbody');
+  const salesTotalEl = document.getElementById('sales-total');
+  const collectionsTbody = document.getElementById('collections-tbody');
+  const messagesListEl = document.getElementById('messages-list');
+
+  /* ---------- Helpers ---------- */
+  function calcTotalSales(){
+    const total = salesItems.reduce((s,i)=>s + (i.qty * i.price), 0);
+    monthSalesEl.textContent = 'R ' + total.toLocaleString();
+    return total;
+  }
+  function updateActiveCollections(){
+    activeCollectionsEl.textContent = activeCollections.length;
+  }
+  function updateCustomerMessages(){
+    customerMessagesCountEl.textContent = messages.length;
+  }
+  function updatePendingCount(){
+    const c = bookings.filter(b=>b.status==='Pending').length;
+    pendingCountEl.textContent = c;
+    bookingsTotalEl.textContent = c;
+  }
+  function renderBookings(){
+    bookingsTbody.innerHTML = '';
+    bookings.forEach((b, idx)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${b.id}</td>
+        <td>${b.customer}</td>
+        <td>${b.datetime}</td>
+        <td>${b.service}</td>
+        <td>${b.status}</td>
+        <td>
+          <button data-action="confirm" data-idx="${idx}" style="margin-right:6px;padding:6px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer">Confirm</button>
+          <button data-action="cancel" data-idx="${idx}" style="padding:6px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer">Cancel</button>
+        </td>`;
+      bookingsTbody.appendChild(tr);
+    });
+  }
+  function renderDesigns(){
+    designsListEl.innerHTML = '';
+    designs.forEach(d=>{
+      const card = document.createElement('div'); card.className='design-card';
+      card.innerHTML = `
+        <div style="height:120px;background:#eee;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden">
+          ${d.img ? `<img src="${d.img}" alt="${d.name}">` : `<div style="color:#666">${d.name}</div>`}
+        </div>
+        <div style="margin-top:8px"><strong>${d.name}</strong></div>
+        <div style="color:#666;margin-top:4px">R ${Number(d.price).toLocaleString()}</div>
+      `;
+      designsListEl.appendChild(card);
+    });
+  }
+  function renderNotifs(){
+    notifsListEl.innerHTML='';
+    notifications.forEach(n=>{
+      const el = document.createElement('div');
+      el.style.padding='8px'; el.style.borderBottom='1px solid #eee';
+      el.textContent = n;
+      notifsListEl.appendChild(el);
+    });
+    // show dot if there are notifications
+    if(notifications.length>0){ notifCountDot.style.display='inline-block'; notifCountDot.textContent = notifications.length; }
+    else { notifCountDot.style.display='none' }
+  }
+  function renderSales(){
+    salesTbody.innerHTML = '';
+    let total = 0;
+    salesItems.forEach(item => {
+      const itemTotal = item.qty * item.price;
+      total += itemTotal;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.label.split(' — ')[0]}</td>
+        <td>${item.label.split(' — ')[1]}</td>
+        <td>${item.qty}</td>
+        <td>R ${item.price.toLocaleString()}</td>
+        <td>R ${itemTotal.toLocaleString()}</td>
+      `;
+      salesTbody.appendChild(tr);
+    });
+    salesTotalEl.textContent = 'R ' + total.toLocaleString();
+  }
+  function renderCollections(){
+    collectionsTbody.innerHTML = '';
+    activeCollections.forEach(collection => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${collection.customer}</td>
+        <td>${collection.items}</td>
+        <td>${collection.pickup}</td>
+      `;
+      collectionsTbody.appendChild(tr);
+    });
+  }
+  function renderMessages(){
+    messagesListEl.innerHTML = '';
+    messages.forEach(msg => {
+      const msgEl = document.createElement('div');
+      msgEl.className = 'msg';
+      msgEl.innerHTML = `
+        <div class="from">${msg.from}</div>
+        <div class="time">${msg.time}</div>
+        <div class="body">${msg.body}</div>
+      `;
+      messagesListEl.appendChild(msgEl);
+    });
+  }
+
+  /* ---------- Initial render ---------- */
+  calcTotalSales();
+  updateActiveCollections();
+  updateCustomerMessages();
+  updatePendingCount();
+  renderBookings();
+  renderDesigns();
+  renderNotifs();
+  renderSales();
+  renderCollections();
+  renderMessages();
+
+  /* ---------- Overlay open/close helpers ---------- */
+  function openOverlay(id){
+    document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('show'));
+    const o = document.getElementById(id);
+    if(o) o.classList.add('show');
+  }
+  function closeOverlay(el){
+    if(!el) return;
+    const overlay = el.closest('.overlay');
+    if(overlay) overlay.classList.remove('show');
+  }
+
+  // close buttons
+  document.querySelectorAll('[data-close]').forEach(btn=>{
+    btn.addEventListener('click',()=> closeOverlay(btn));
+  });
+  document.querySelectorAll('.modal-close').forEach(btn=>{
+    btn.addEventListener('click',()=> closeOverlay(btn));
+  });
+
+  // close overlay by clicking outside modal
+  document.querySelectorAll('.overlay').forEach(ov=>{
+    ov.addEventListener('click', (e)=>{ if(e.target === ov) ov.classList.remove('show') });
+  });
+  // close by escape
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape') document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show'));
+  });
+
+  /* ---------- Wire up top buttons and cards ---------- */
+  document.getElementById('open-bookings').addEventListener('click', ()=> { renderBookings(); openOverlay('overlay-bookings'); });
+  document.getElementById('create-appointment').addEventListener('click', ()=> openOverlay('overlay-create'));
+  document.getElementById('upload-design').addEventListener('click', ()=> openOverlay('overlay-upload'));
+
+  document.getElementById('card-manage').addEventListener('click', ()=>{ renderBookings(); openOverlay('overlay-bookings'); });
+  document.getElementById('card-book').addEventListener('click', ()=> openOverlay('overlay-create'));
+  document.getElementById('card-designs').addEventListener('click', ()=> openOverlay('overlay-upload'));
+  document.getElementById('pending-box').addEventListener('click', ()=>{ renderBookings(); openOverlay('overlay-bookings'); });
+
+  // sidebar nav
+  document.getElementById('nav-manage').addEventListener('click', ()=>{ renderBookings(); openOverlay('overlay-bookings'); });
+  document.getElementById('nav-book').addEventListener('click', ()=> openOverlay('overlay-create'));
+  document.getElementById('nav-design').addEventListener('click', ()=> openOverlay('overlay-upload'));
+  document.getElementById('nav-dashboard').addEventListener('click', ()=> document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('show')));
+
+  // notifications & profile
+  document.getElementById('notif-btn').addEventListener('click', ()=> openOverlay('overlay-notifs'));
+  document.getElementById('profile-btn').addEventListener('click', ()=> openOverlay('overlay-profile'));
+
+  // new metric pop-ups
+  document.getElementById('month-sales').addEventListener('click', ()=>{ renderSales(); openOverlay('overlay-sales'); });
+  document.getElementById('active-collections').addEventListener('click', ()=>{ renderCollections(); openOverlay('overlay-collections'); });
+  document.getElementById('customer-messages').addEventListener('click', ()=>{ renderMessages(); openOverlay('overlay-messages'); });
+
+  /* ---------- Form: Create appointment ---------- */
+  document.getElementById('form-create').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const name = data.get('name').trim();
+    const datetime = data.get('datetime');
+    const service = data.get('service');
+    if(!name || !datetime || !service){ alert('Please fill all fields'); return; }
+    const id = 'BK' + (1000 + bookings.length + 1);
+    bookings.push({ id, customer:name, datetime, service, status:'Pending' });
+    renderBookings();
+    updatePendingCount();
+    notifications.unshift(`New appointment: ${name} — ${datetime}`);
+    renderNotifs();
+    e.target.reset();
+    closeOverlay(e.target);
+    alert('Appointment created (demo).');
+  });
+
+  /* ---------- Form: Upload design with preview ---------- */
+  const uploadForm = document.getElementById('form-upload');
+  const previewWrap = document.getElementById('preview-wrap');
+  const previewImg = document.getElementById('preview-img');
+  uploadForm.image.addEventListener('change', (ev)=>{
+    const file = ev.target.files[0];
+    if(!file) { previewWrap.style.display='none'; previewImg.src=''; return; }
+    const reader = new FileReader();
+    reader.onload = ()=>{ previewImg.src = reader.result; previewWrap.style.display='block'; }
+    reader.readAsDataURL(file);
+  });
+  uploadForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const name = data.get('designName').trim();
+    const price = data.get('price');
+    const desc = data.get('desc').trim();
+    const file = data.get('image');
+    if(!name || !price || !desc || !file){ alert('Please fill all fields & choose an image'); return; }
+    // read file as data URL and then save
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      designs.push({ name, price, desc, img: reader.result });
+      renderDesigns();
+      notifications.unshift(`Design uploaded: ${name}`);
+      renderNotifs();
+      e.target.reset();
+      previewWrap.style.display='none';
+      closeOverlay(e.target);
+      alert('Design uploaded (demo).');
+      updateActiveCollections(); // optional: keep collections in sync if you want
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ---------- Manage bookings actions: confirm/cancel ---------- */
+  bookingsTbody.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const action = btn.dataset.action;
+    const idx = Number(btn.dataset.idx);
+    if(action === 'confirm'){
+      bookings[idx].status = 'Confirmed';
+      notifications.unshift(`Booking ${bookings[idx].id} confirmed`);
+    } else if(action === 'cancel'){
+      bookings[idx].status = 'Cancelled';
+      notifications.unshift(`Booking ${bookings[idx].id} cancelled`);
+    }
+    renderBookings();
+    updatePendingCount();
+    renderNotifs();
+  });
+
+  /* ---------- Logout ---------- */
+  document.getElementById('btn-logout').addEventListener('click', ()=>{
+    alert('Logged out (demo).');
+    // In real app: redirect or clear session
+  });
+
+  /* Accessibility: ensure initial states */
+  renderNotifs();
+  updatePendingCount();
+});
+</script>
+</body>
+</html>
