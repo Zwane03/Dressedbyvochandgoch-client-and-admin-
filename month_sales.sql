@@ -1,0 +1,6 @@
+CREATE TABLE month_sales (
+  sale_id INT AUTO_INCREMENT PRIMARY KEY,
+  month_name VARCHAR(20) NOT NULL,
+  total_sales DECIMAL(10,2) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
