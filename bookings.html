@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Dressedbyvochandgoch</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* CSS from the Gowns Home Page for consistent header layout */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .login-container, .profile-container {
+            margin-left: auto;
+            position: relative;
+        }
+        .profile-container {
+            display: none; 
+        }
+        .login-button {
+            background-color: #555;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #d15a7f;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .profile-menu {
+            display: none; 
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            width: 200px;
+            padding: 10px;
+            z-index: 100;
+        }
+        .profile-menu p { margin: 5px 0; padding: 0 5px; font-size: 14px; }
+        .profile-menu p.name { font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
+        .profile-menu button { width: 100%; padding: 8px; margin-top: 5px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .profile-menu button:nth-child(3) { background-color: #007bff; color: white; }
+        .profile-menu button:last-child { background-color: #dc3545; color: white; }
+
+        /* Additional styles that might be in style.css, added here for completeness if style.css is missing */
+        nav .container a.active {
+             border-bottom: 2px solid #1a1a1a;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background-color: #d15a7f;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #b94b6d;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Dressedbyvochandgoch</h1>
+        
+        <div class="login-container" id="loginButtonContainer">
+            <a href="login.html" class="login-button">Login / Sign Up</a>
+        </div>
+        
+        <div class="profile-container" id="profileContainer">
+            <div class="profile-icon" id="profileIcon">A</div>
+            
+            <div class="profile-menu" id="profileMenu">
+                <p class="name" id="menuFullName">Guest Name</p>
+                <p id="menuEmail">guest@example.com</p>
+                <button onclick="alert('Redirecting to Update Details Page...')">Update Details</button>
+                <button onclick="logOutUser()">Log Out</button>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <a href="index.html">Home</a>
+            <a href="catalogues.html">Catalogues</a>
+            <a href="bookings.html" class="active">Book Appointment</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section id="appointment">
+            <h2>Book a Fitting or Consultation </h2>
+            <p>Schedule a personalized appointment with our stylists for measurements, fittings, or to explore our collections in person.</p>
+            
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                 <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="service">Type of Appointment:</label>
+                    <select id="service" name="service" required>
+                        <option value="">--Please choose an option--</option>
+                        <option value="measurement">Measurements</option>
+                        <option value="fitting">Fitting Session</option>
+                        <option value="consultation">Viewing & Consultation</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date">Preferred Date:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                 <div class="form-group">
+                    <label for="notes">Notes (e.g., specific dress or collection):</label>
+                    <textarea id="notes" name="notes" rows="4"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Request Appointment</button>
+            </form>
+            <p id="confirmationMessage"></p>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Dressedbyvochandgoch. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // --- Authentication & Profile Logic ---
+        const loginContainer = document.getElementById("loginButtonContainer");
+        const profileContainer = document.getElementById("profileContainer");
+        const profileIcon = document.getElementById("profileIcon");
+        const profileMenu = document.getElementById("profileMenu");
+        const menuFullName = document.getElementById("menuFullName");
+        const menuEmail = document.getElementById("menuEmail");
+
+        const STORAGE_KEY = 'currentUser';
+        let user = null; 
+
+        function loadUser() {
+            const storedUser = localStorage.getItem(STORAGE_KEY);
+            if (storedUser) {
+                user = JSON.parse(storedUser);
+                setLoggedInState(user.fullName, user.email);
+            }
+        }
+        
+        function updateHeaderState() {
+            if (user) {
+                loginContainer.style.display = 'none';
+                profileContainer.style.display = 'block';
+            } else {
+                loginContainer.style.display = 'block';
+                profileContainer.style.display = 'none';
+                profileMenu.style.display = 'none'; 
+            }
+        }
+
+        function setLoggedInState(name, email) {
+            user = { fullName: name, email: email };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+            
+            const initial = name.charAt(0).toUpperCase();
+            profileIcon.textContent = initial;
+            menuFullName.textContent = name;
+            menuEmail.textContent = email;
+            updateHeaderState();
+        }
+
+        function logOutUser() {
+            user = null;
+            localStorage.removeItem(STORAGE_KEY); 
+            updateHeaderState();
+            alert("You have been logged out.");
+        }
+
+        // --- Profile Menu Dropdown Logic ---
+        profileIcon.onclick = function(event) {
+            event.stopPropagation();
+            profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        document.addEventListener('click', function(event) {
+            if (user && profileMenu.style.display === 'block' && !profileContainer.contains(event.target)) {
+                profileMenu.style.display = 'none';
+            }
+        });
+
+        // --- Booking Form Logic (Existing) ---
+        // --- INSIDE bookings.html <script> ---
+
+        document.getElementById('bookingForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                service: document.getElementById('service').value,
+                date: document.getElementById('date').value,
+                notes: document.getElementById('notes').value
+            };
+
+            // Send data to PHP
+            fetch('submit_booking.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const confirmation = document.getElementById('confirmationMessage');
+                    confirmation.style.color = "green";
+                    confirmation.textContent = `Success! Booking Ref: ${data.ref}. We will contact you shortly.`;
+                    document.getElementById('bookingForm').reset();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("There was an error saving your booking.");
+                });
+        });
+        // --- Initialization ---
+        window.onload = loadUser;
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collections - Dressedbyvochandgoch</title>
+
+    <style>
+        /* --- Google Fonts Import --- */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Lato:wght@300;400&display=swap');
+
+        /* --- General Reset & Body Styles --- */
+        body {
+            font-family: 'Lato', sans-serif;
+            font-weight: 300;
+            margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
+            color: #1a1a1a;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px 40px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            text-align: center;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        /* Styles copied from user input */
+        header h1 {
+            font-size: 2.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 1.8rem; /* Adjusted for section headers */
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        p {
+            text-align: center;
+            max-width: 700px;
+            margin: 15px auto 40px auto;
+            font-size: 1.1rem;
+        }
+
+        /* --- Header & Navigation (UPDATED FOR LOGIN/PROFILE) --- */
+        header {
+            display: flex; /* Added for alignment */
+            justify-content: space-between; /* Added for alignment */
+            align-items: center; /* Added for alignment */
+            padding: 10px 20px; /* Reduced top/bottom padding to 10px */
+            border-bottom: none; /* Assuming nav handles the border now */
+        }
+
+        nav {
+            background: #fdfdfd;
+            padding: 25px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            nav a {
+                color: #1a1a1a;
+                text-decoration: none;
+                margin: 0 25px;
+                font-size: 1rem;
+                font-weight: 400;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                transition: color 0.4s ease;
+                padding-bottom: 5px;
+                border-bottom: 2px solid transparent;
+            }
+
+                nav a:hover {
+                    color: #b39970;
+                }
+
+                nav a.active {
+                    color: #1a1a1a;
+                    border-bottom: 2px solid #1a1a1a;
+                }
+
+        /* --- LOGIN/PROFILE STYLES --- */
+        .login-container, .profile-container {
+            margin-left: auto;
+            position: relative;
+        }
+        .profile-container {
+            display: none; /* Hidden by default */
+        }
+        .login-button {
+            background-color: #555;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #d15a7f;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .profile-menu {
+            display: none; 
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            width: 200px;
+            padding: 10px;
+            z-index: 100;
+        }
+        .profile-menu p { margin: 5px 0; padding: 0 5px; font-size: 14px; }
+        .profile-menu p.name { font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
+        .profile-menu button { width: 100%; padding: 8px; margin-top: 5px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .profile-menu button:nth-child(3) { background-color: #007bff; color: white; }
+        .profile-menu button:last-child { background-color: #dc3545; color: white; }
+
+        /* --- Slideshow Styles --- */
+        .slideshow-container {
+            max-width: 100%;
+            position: relative;
+            margin: 40px auto 0 auto;
+            overflow: hidden;
+            border-radius: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            cursor: grab;
+        }
+
+        .mySlides {
+            display: none;
+            width: 100%;
+            position: relative;
+            text-align: center;
+        }
+
+            .mySlides img {
+                max-width: 100%; 
+                height: auto; 
+                object-fit: contain; 
+                max-height: 800px;
+                display: block;
+                margin: 0 auto;
+            }
+
+        /* Next & previous buttons */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 18px;
+            margin-top: -30px;
+            color: #fdfdfd;
+            font-weight: bold;
+            font-size: 24px;
+            transition: 0.6s ease;
+            user-select: none;
+            background-color: rgba(26, 26, 26, 0.6);
+            border-radius: 0;
+            z-index: 10;
+        }
+
+        /* Position the "next button" to the right */
+        .next {
+            right: 0;
+        }
+
+            /* On hover, add a black background with a little opacity */
+            .prev:hover, .next:hover {
+                background-color: rgba(179, 153, 112, 0.8); /* Accent hover */
+            }
+
+        /* The dots/bullets/indicators container */
+        .dots-container {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+
+        /* The dots/bullets/indicators */
+        .dot {
+            cursor: pointer;
+            height: 10px;
+            width: 10px;
+            margin: 0 5px;
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+        }
+
+            .active-dot, .dot:hover {
+                background-color: #b39970; /* Muted gold accent */
+            }
+
+        /* Fade animation for slides */
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: .4
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        /* Mobile adjustment for navigation buttons */
+        @media (max-width: 600px) {
+            .prev, .next {
+                font-size: 18px;
+                padding: 12px;
+                margin-top: -20px;
+            }
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            background: #fdfdfd;
+            color: #888;
+            margin-top: 60px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Dressedbyvochandgoch</h1>
+        
+        <div class="login-container" id="loginButtonContainer">
+            <a href="login.html" class="login-button">Login / Sign Up</a>
+        </div>
+        
+        <div class="profile-container" id="profileContainer">
+            <div class="profile-icon" id="profileIcon">A</div>
+            
+            <div class="profile-menu" id="profileMenu">
+                <p class="name" id="menuFullName">Guest Name</p>
+                <p id="menuEmail">guest@example.com</p>
+                <button onclick="alert('Redirecting to Update Details Page...')">Update Details</button>
+                <button onclick="logOutUser()">Log Out</button>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <a href="index.html">Home</a>
+            <a href="catalogues.html" class="active">Catalogues</a>
+            <a href="bookings.html">Book Appointment</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Our Exclusive Collections</h2>
+
+        <section id="luxe" class="mb-16">
+            <h3>Luxe Custom-Design</h3>
+            <p>Experience the pinnacle of personalization. Our Luxe Custom-Design service transforms your vision into a wearable masterpiece, handcrafted with the finest materials.</p>
+
+            <div class="slideshow-container" data-category="luxe">
+                <div class="mySlides fade" data-slide="luxe-1">
+                    <img src="luxe 1.jpg" alt="luxe Dress 1">
+                </div>
+                <div class="mySlides fade" data-slide="luxe-2">
+                    <img src="luxe 2.jpg" alt="luxe Dress 2">
+                </div>
+                <div class="mySlides fade" data-slide="luxe-3">
+                    <img src="luxe 3.jpg" alt="luxe Dress 3">
+                </div>
+
+                <a class="prev" onclick="plusSlides(-1, 'luxe')">&#10094;</a>
+                <a class="next" onclick="plusSlides(1, 'luxe')">&#10095;</a>
+            </div>
+            <div class="dots-container" data-category="luxe">
+                <span class="dot" onclick="currentSlide(1, 'luxe')"></span>
+                <span class="dot" onclick="currentSlide(2, 'luxe')"></span>
+                <span class="dot" onclick="currentSlide(3, 'luxe')"></span>
+            </div>
+        </section>
+
+        <section id="evening" class="mb-16">
+            <h3>Evening Wear</h3>
+            <p>Make an unforgettable entrance. Our Evening Wear collection features glamorous gowns and sophisticated attire perfect for galas, red carpets, and special occasions.</p>
+
+            <div class="slideshow-container" data-category="evening">
+                <div class="mySlides fade" data-slide="evening-1">
+                    <img src="evening 1.jpg" alt="evening Dress 1">
+                </div>
+                <div class="mySlides fade" data-slide="evening-2">
+                    <img src="evening 2.jpg" alt="evening Dress 2">
+                </div>
+                <div class="mySlides fade" data-slide="evening-3">
+                    <img src="evening 3.jpg" alt="evening Dress 3">
+                </div>
+
+                <a class="prev" onclick="plusSlides(-1, 'evening')">&#10094;</a>
+                <a class="next" onclick="plusSlides(1, 'evening')">&#10095;</a>
+            </div>
+            <div class="dots-container" data-category="evening">
+                <span class="dot" onclick="currentSlide(1, 'evening')"></span>
+                <span class="dot" onclick="currentSlide(2, 'evening')"></span>
+                <span class="dot" onclick="currentSlide(3, 'evening')"></span>
+            </div>
+        </section>
+
+        <section id="bridal" class="mb-16">
+            <h3>Bridal Wear</h3>
+            <p>From traditional elegance to modern chic, find the dress of your dreams. Our Bridal collection offers stunning gowns and accessories for your perfect wedding day.</p>
+
+            <div class="slideshow-container" data-category="bridal">
+                <div class="mySlides fade" data-slide="bridal-1">
+                    <img src="bridal 1.jpg" alt="bridal Dress 1">
+                </div>
+                <div class="mySlides fade" data-slide="bridal-2">
+                    <img src="bridal 2.jpg" alt="bridal Dress 2">
+                </div>
+                <div class="mySlides fade" data-slide="bridal-3">
+                    <img src="bridal 3.jpg" alt="bridalDress 3">
+                </div>
+                <a class="prev" onclick="plusSlides(-1, 'bridal')">&#10094;</a>
+                <a class="next" onclick="plusSlides(1, 'bridal')">&#10095;</a>
+            </div>
+            <div class="dots-container" data-category="bridal">
+                <span class="dot" onclick="currentSlide(1, 'bridal')"></span>
+                <span class="dot" onclick="currentSlide(2, 'bridal')"></span>
+                <span class="dot" onclick="currentSlide(3, 'bridal')"></span>
+            </div>
+        </section>
+
+        <section id="prom" class="mb-16">
+            <h3>Prom</h3>
+            <p>Shine on your big night! Our Prom collection features the latest trends, vibrant colors, and show-stopping silhouettes designed to make you feel like royalty.</p>
+
+            <div class="slideshow-container" data-category="prom">
+                <div class="mySlides fade" data-slide="prom-1">
+                    <img src="matric 1.jpg" alt="Prom Dress 1: Red sequined gown with a high slit.">
+                </div>
+                <div class="mySlides fade" data-slide="prom-2">
+                    <img src="matric 2.jpg" alt="Prom Dress 2: Silver sequined gown with a deep V-neck and ruffled shoulder detail.">
+                </div>
+                <div class="mySlides fade" data-slide="prom-3">
+                    <img src="matric 3.jpg" alt="Prom Dress 3: Black sequined mermaid gown with an asymmetrical shoulder design.">
+                </div>
+
+                <a class="prev" onclick="plusSlides(-1, 'prom')">&#10094;</a>
+                <a class="next" onclick="plusSlides(1, 'prom')">&#10095;</a>
+            </div>
+            <div class="dots-container" data-category="prom">
+                <span class="dot" onclick="currentSlide(1, 'prom')"></span>
+                <span class="dot" onclick="currentSlide(2, 'prom')"></span>
+                <span class="dot" onclick="currentSlide(3, 'prom')"></span>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Dressedbyvochandgoch. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // --- Authentication & Profile Logic ---
+        const loginContainer = document.getElementById("loginButtonContainer");
+        const profileContainer = document.getElementById("profileContainer");
+        const profileIcon = document.getElementById("profileIcon");
+        const profileMenu = document.getElementById("profileMenu");
+        const menuFullName = document.getElementById("menuFullName");
+        const menuEmail = document.getElementById("menuEmail");
+
+        const STORAGE_KEY = 'currentUser';
+        let user = null; 
+
+        function loadUser() {
+            const storedUser = localStorage.getItem(STORAGE_KEY);
+            if (storedUser) {
+                user = JSON.parse(storedUser);
+                setLoggedInState(user.fullName, user.email);
+            }
+        }
+        
+        function updateHeaderState() {
+            if (user) {
+                loginContainer.style.display = 'none';
+                profileContainer.style.display = 'block';
+            } else {
+                loginContainer.style.display = 'block';
+                profileContainer.style.display = 'none';
+                profileMenu.style.display = 'none'; 
+            }
+        }
+
+        function setLoggedInState(name, email) {
+            user = { fullName: name, email: email };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+            
+            const initial = name.charAt(0).toUpperCase();
+            profileIcon.textContent = initial;
+            menuFullName.textContent = name;
+            menuEmail.textContent = email;
+            updateHeaderState();
+        }
+
+        function logOutUser() {
+            user = null;
+            localStorage.removeItem(STORAGE_KEY); 
+            updateHeaderState();
+            alert("You have been logged out.");
+        }
+
+        // --- Profile Menu Dropdown Logic ---
+        profileIcon.onclick = function(event) {
+            event.stopPropagation();
+            profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        document.addEventListener('click', function(event) {
+            if (user && profileMenu.style.display === 'block' && !profileContainer.contains(event.target)) {
+                profileMenu.style.display = 'none';
+            }
+        });
+        
+        // --- Slideshow Logic ---
+        const slideIndex = {
+            'luxe': 1,
+            'evening': 1,
+            'bridal': 1,
+            'prom': 1
+        };
+
+        function plusSlides(n, category) {
+            showSlides(slideIndex[category] += n, category);
+        }
+
+        function currentSlide(n, category) {
+            showSlides(slideIndex[category] = n, category);
+        }
+
+        function showSlides(n, category) {
+            const container = document.querySelector(`.slideshow-container[data-category="${category}"]`);
+            const slides = container.querySelectorAll('.mySlides');
+            const dots = document.querySelector(`.dots-container[data-category="${category}"]`).querySelectorAll('.dot');
+
+            if (n > slides.length) {
+                slideIndex[category] = 1;
+            }
+            if (n < 1) {
+                slideIndex[category] = slides.length;
+            }
+
+            slides.forEach(slide => slide.style.display = 'none');
+            dots.forEach(dot => dot.classList.remove('active-dot'));
+
+            slides[slideIndex[category] - 1].style.display = 'block';
+            dots[slideIndex[category] - 1].classList.add('active-dot');
+        }
+
+        let xDown = null;
+
+        function handleTouchStart(evt) {
+            xDown = evt.touches[0].clientX;
+        }
+
+        function handleTouchEnd(evt) {
+            if (xDown === null) {
+                return;
+            }
+
+            const container = evt.currentTarget;
+            const category = container.getAttribute('data-category');
+
+            const xUp = evt.changedTouches[0].clientX;
+
+            const xDiff = xDown - xUp;
+            const SWIPE_THRESHOLD = 50; 
+
+            if (Math.abs(xDiff) > SWIPE_THRESHOLD) {
+                if (xDiff > 0) {
+                    plusSlides(1, category);
+                } else {
+                    plusSlides(-1, category);
+                }
+            }
+
+            xDown = null;
+        }
+
+        function addSwipeListeners(container) {
+            container.addEventListener('touchstart', handleTouchStart, { passive: true });
+            container.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }
+
+
+        // --- Initialization ---
+        window.onload = function () {
+            // Initialize Authentication first
+            loadUser();
+            
+            // Then initialize Slideshows
+            const slideshowContainers = document.querySelectorAll('.slideshow-container');
+            Object.keys(slideIndex).forEach(category => {
+                showSlides(slideIndex[category], category);
+            });
+
+            slideshowContainers.forEach(container => {
+                addSwipeListeners(container);
+            });
+        };
+    </script>
+
+</body>
+</html>
+
+
+
