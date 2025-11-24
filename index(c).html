@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegance Gowns - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* General Layout */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        nav {
+            background-color: white;
+            z-index: 5;
+            position: relative;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        /* Header Buttons/Icons (Login/Profile) */
+        .login-container, .profile-container {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .profile-container {
+            display: none; /* Hide profile by default, shown by JS */
+        }
+
+        .login-button {
+            background-color: #555;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #d15a7f;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        /* Profile Dropdown Menu */
+        .profile-menu {
+            display: none; /* Hidden by default, shown by JS */
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            width: 200px;
+            padding: 10px;
+            z-index: 100;
+        }
+        
+        .profile-menu p { margin: 5px 0; padding: 0 5px; font-size: 14px; }
+        .profile-menu p.name { font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; }
+        .profile-menu button { width: 100%; padding: 8px; margin-top: 5px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .profile-menu button:nth-child(3) { background-color: #007bff; color: white; }
+        .profile-menu button:last-child { background-color: #dc3545; color: white; }
+
+        /* MODAL STYLES REMOVED/HIDDEN 
+           Note: The modal div and form elements are still in the HTML body 
+           but are no longer referenced by the 'Login / Sign Up' button.
+        */
+        .modal {
+            display: none; /* Explicitly hide the modal */
+        }
+
+        /* VIDEO SECTION STYLES (PORTRAIT VIEW) */
+        .video-container {
+            width: 100%;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .video-wrapper {
+            width: 90%; 
+            max-width: 450px; 
+            height: 80vh; 
+            margin: 0 auto;
+            background-color: #f0f0f0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+
+        .hero {
+            text-align: center;
+        }
+
+        /* Added CTA button style */
+        .cta-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #d15a7f;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #b94b6d;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <h1>Dressedbyvochandgoch</h1>
+        
+        <div class="login-container" id="loginButtonContainer">
+            <a href="login.html" class="login-button">Login / Sign Up</a>
+        </div>
+        
+        <div class="profile-container" id="profileContainer">
+            <div class="profile-icon" id="profileIcon">A</div>
+            
+            <div class="profile-menu" id="profileMenu">
+                <p class="name" id="menuFullName">Guest Name</p>
+                <p id="menuEmail">guest@example.com</p>
+                <button onclick="alert('Redirecting to Update Details Page...')">Update Details</button>
+                <button onclick="logOutUser()">Log Out</button>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <a href="index.html" class="active">Home</a>
+            <a href="catalogues.html">Catalogues</a>
+            <a href="bookings.html">Book Appointment</a>
+        </div>
+    </nav>
+
+    <div class="video-container">
+        <div class="video-wrapper">
+            <video autoplay loop muted playsinline>
+                <source src="MicrosoftTeams-video (1).mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+    <div class="container">
+        <section class="hero">
+            <h2>Discover Timeless Elegance</h2>
+            <p>Welcome to Dressedbyvochandgoch, where we craft exquisite evening wear for your most memorable moments. Explore our collections and find the dress of your dreams.</p>
+            
+            <a href="catalogues.html" class="cta-button">View Our Collections</a>
+        </section>
+
+        <section class="about">
+            <h2>Our Promise</h2>
+            <p>We believe every woman deserves to feel beautiful. Our mission is to provide stunning, high-quality gowns with a personalized fitting experience that ensures you look and feel your absolute best.</p>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Dressedbyvochandgoch. All Rights Reserved.</p>
+    </footer>
+
+    <div id="loginSignupModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <h2>Login</h2>
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" name="loginEmail" required value="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" name="loginPassword" required value="password">
+                </div>
+                <button type="submit">Log In</button>
+                <a class="form-switch-link" data-target="signupForm">Need an account? Sign Up!</a>
+            </form>
+
+            <form id="signupForm" style="display:none;" onsubmit="handleSignup(event)">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <label for="signupName">Full Name:</label>
+                    <input type="text" id="signupName" name="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email:</label>
+                    <input type="email" id="signupEmail" name="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password:</label>
+                    <input type="password" id="signupPassword" name="signupPassword" required>
+                </div>
+                <button type="submit">Sign Up</button>
+                <a class="form-switch-link" data-target="loginForm">Already have an account? Log In.</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const loginContainer = document.getElementById("loginButtonContainer");
+        const profileContainer = document.getElementById("profileContainer");
+        const profileIcon = document.getElementById("profileIcon");
+        const profileMenu = document.getElementById("profileMenu");
+        const menuFullName = document.getElementById("menuFullName");
+        const menuEmail = document.getElementById("menuEmail");
+
+        // --- Simulated User Data ---
+        const STORAGE_KEY = 'currentUser';
+        let user = null; 
+
+        // --- Core Functions ---
+
+        function loadUser() {
+            const storedUser = localStorage.getItem(STORAGE_KEY);
+            if (storedUser) {
+                user = JSON.parse(storedUser);
+                setLoggedInState(user.fullName, user.email);
+            }
+        }
+        
+        function updateHeaderState() {
+            if (user) {
+                loginContainer.style.display = 'none';
+                profileContainer.style.display = 'block';
+            } else {
+                loginContainer.style.display = 'block';
+                profileContainer.style.display = 'none';
+                profileMenu.style.display = 'none'; 
+            }
+        }
+
+        function setLoggedInState(name, email) {
+            user = { fullName: name, email: email };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+            
+            const initial = name.charAt(0).toUpperCase();
+            profileIcon.textContent = initial;
+            menuFullName.textContent = name;
+            menuEmail.textContent = email;
+            updateHeaderState();
+        }
+
+        function logOutUser() {
+            user = null;
+            localStorage.removeItem(STORAGE_KEY); 
+            updateHeaderState();
+            alert("You have been logged out.");
+        }
+
+        // --- Event Listeners ---
+        window.onload = loadUser; 
+
+        // --- Profile Menu Dropdown Logic ---
+        profileIcon.onclick = function(event) {
+            event.stopPropagation();
+            profileMenu.style.display = profileMenu.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        document.addEventListener('click', function(event) {
+            if (user && profileMenu.style.display === 'block' && !profileContainer.contains(event.target)) {
+                profileMenu.style.display = 'none';
+            }
+        });
+        
+        // --- REMOVED: All modal and form submission functions (handleLogin, handleSignup, modal close logic) ---
+        // Since the button now redirects to login.html, the modal logic is no longer needed on this page.
+
+    </script>
+
+</body>
+</html>
